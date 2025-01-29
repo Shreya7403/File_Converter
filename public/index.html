@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Converter</title>
+</head>
+<body>
+    <h1>File Converter</h1>
+
+    <div>
+        <h2>Convert PDF to Word</h2>
+        <input type="file" id="pdfFile" accept="application/pdf">
+        <button id="convertPdfToWord">Convert to Word</button>
+    </div>
+
+    <div>
+        <h2>Convert Word to PDF</h2>
+        <input type="file" id="wordFile" accept=".doc,.docx">
+        <button id="convertWordToPdf">Convert to PDF</button>
+    </div>
+
+    <script>
+        document.getElementById('convertPdfToWord').addEventListener('click', function () {
+            const pdfFile = document.getElementById('pdfFile').files[0];
+            if (pdfFile) {
+                const formData = new FormData();
+                formData.append('file', pdfFile);
+
+                fetch('/convert-pdf-to-word', {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then((response) => response.blob())
+                    .then((blob) => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = 'converted-file.docx';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    })
+                    .catch((error) => alert('Error: ' + error.message));
+            } else {
+                alert('Please select a PDF file.');
+            }
+        });
+
+        document.getElementById('convertWordToPdf').addEventListener('click', function () {
+            const wordFile = document.getElementById('wordFile').files[0];
+            if (wordFile) {
+                const formData = new FormData();
+                formData.append('file', wordFile);
+
+                fetch('/convert-word-to-pdf', {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then((response) => response.blob())
+                    .then((blob) => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = 'converted-file.pdf';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    })
+                    .catch((error) => alert('Error: ' + error.message));
+            } else {
+                alert('Please select a Word file.');
+            }
+        });
+    </script>
+</body>
+</html>
